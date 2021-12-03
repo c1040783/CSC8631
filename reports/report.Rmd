@@ -60,7 +60,7 @@ The first step of CRISP-DM is the *Business Understanding* step, where we try to
 * Is the students in the course highly engaged?
 * How many students and what causes students to leave the course?
 * Which topic interests students the most?
-* Is there any correlation between thevideo views and the device form?
+* Is there any correlation between the video views and the device form?
 
 # Data Understanding and Data Preparation
 
@@ -86,9 +86,19 @@ Firstly, we are given the data set regarding an online course from the FutureLea
 * weekly sentiment survey response (4)
 
 \noindent
-Each of the files consists of different rows (entries), and all the columns (variables) are stored in a chr and num format. 
+Each of the files consists of different rows (entries), and all the columns (variables) are stored in a chr and num format.   
+\hfill\break
+In this project, we are going to consider several files related to our observations only. The files are :
 
-ALSO STATE WHY YOU PICK THE FILE
+* cyber-security-*_enrolments.csv (run 1 to 7)  
+We are going to use thess files to answer question number one
+* cyber-security-*_leaving-survey-responses.csv (run 1 to 7)  
+We are going to use these files to answer question number two
+* cyber-security-*_video-stats.csv (run 3 to 7)  
+We are going to use these files to answer question number three and four
+
+\noindent
+Other files are going to be dropped since they are unrelated to our questions.
 
 ## Exploring the Data
 
@@ -97,165 +107,32 @@ In this section, we will begin to explore the given data set. In particular, we 
 ### Question 1 
 **What is the participation rate of the students?**  
 \hfill\break
-For the first question, we want to analyse whether students are highly engaged in the course. There are many ways to check this, but we will check the full participation rate. We will focus on how many percentages of students fully participated and finished the material of the classes. We will also check the duration of the completion for each student and we can do this by checking the enrolments.csv provided in the data set.  
+We want to analyse whether students are highly engaged in the course for the first question. There are many ways to check this, but we will review the total participation rate. We will focus on how many percentages of students fully participated and finished the material of the classes. We will also check the duration of the completion for each student, and we can do this by checking the enrolments.csv provided in the data set.  
 \hfill\break
-Firstly, we will do some data pre-processing for part 1
-
-```{r eval=FALSE}
-#read file enrolments run 1 to 7
-files = list.files(path = "data/", 
-                   pattern="*enrolments.csv", full.names = T)
-
-#store each run in a single variable
-for (i in 1:length(files)) {
-  temp <- paste("enrolments", i, sep = "")
-  assign(temp, read.csv(files[i]))
-}
-```
-  
-We read and store each run of enrolments in a single variable for a later use. After that, we begin to do some processing in our data. We begin by subsetting the students who fully participated in the course (there are entries for the fully_participated columns in the csv data). 
-
-```{r eval=FALSE}
-enrolments <- 
-  enrolments[!enrolments$fully_participated_at == "" , ]
-```
-
-Then, we convert the enrolled_at and fully_participated variables of each run from string format to date format to calculate the duration later using difftime function. We convert it by using the as.Date function. It is also worth mentioning that we store the code inside a function for a more effective writing process for the converting and calculating duration part. 
-
-```{r eval=FALSE}
-as.Date(as.character(enrolments_na$enrolled_at), 
-        format = "%Y-%m-%d") 
-as.Date(as.character(enrolments_na$fully_participated_at), 
-        format = "%Y-%m-%d")
-difftime(enrolments_na$fully_participated_at, 
-         enrolments_na$enrolled_at,
-         units = c("days"))
-```
-
-After converting it, we calculate the duration between the fully_participated_at and enrolled_at and store it in a new variable. We also remove entries or outliers for each run where the period exceeds 365 days or one year. 
-
-```{r eval=FALSE}
-enrolments1_na <- enrolments1_na[!(enrolments1_na$duration 
-                                   > 365) , ]
-```
-
-Lastly, we calculate the percentage of students who fully participated in the course proportion to the overall enrollment for each run. 
-
-```{r eval=FALSE}
-enrolments_completion_rate[1] = 
-  dim(enrolments1_na)[1]/dim(enrolments1)[1] * 100
-```
+Firstly, we will do some data pre-processing for part one, and the corresponding script is enrolments.R located in the /munge folder. We read and store each run of enrolments in a single variable for later use. After that, we begin processing our data, and the corresponding script is fully_participated.R is located in the /src folder. We start by subsetting the students who fully participated in the course (there are entries for the fully_participated columns in the csv data). Then, we convert the enrolled_at and fully_participated variables of each run from string format to date format to calculate the duration later using the difftime function. We convert it by using the as.Date function. It is also worth mentioning that we store the code inside a function for a more effective writing process for the converting and calculating duration part.   
+\hfill\break
+After converting it, we calculate the duration between the fully_participated_at and enrolled_at and store it in a new variable. We also remove entries or outliers for each run where the period exceeds 365 days or one year. Lastly, we calculate the percentage of students who fully participated in the course proportion to the overall enrollment for each run. 
 
 ### Question 2 
 **How many students and what causes students to leave the course?**  
 \hfill\break
-For the second question, we want to analyse how many students leave the course, what time they quit, and why. Same as before, we will begin by pre-processing the data from leaving survey responses. It is worth mentioning that we assume people who formally quit the course are all required to fill the survey, so the number of students who formally leave the class is equal to the number of the survey entries. 
-
-```{r eval=FALSE}
-#read file archetype survey responses run 1 to 7 
-#and store it in a variable
-files = list.files(path = "data/", 
-                   pattern="*leaving-survey-responses.csv"
-                   , full.names = T)
-
-for (i in 1:length(files)) {
-  temp <- paste("leaving", i, sep = "")
-  assign(temp, read.csv(files[i]))
-}
-```
-
-We read the file and store each run data in a variable similar to before. We can then move on to the processing part. We begin by merging the enrolment and leaving data to extract the enrolment_at column. The column later will be used to calculate the duration between the starting and leaving date. 
-
-```{r eval=FALSE}
-leaving4 <- merge(leaving4, enrolments4, by = "learner_id")
-```
-
-Then, we drop the columns unrelated to our observations, such as id, last_completed_step_at, etc. 
-
-```{r eval=FALSE}
-leaving4 <- leaving4[-c(5:8, 10:20)]
-```
-
-Like before, we convert the date from string format to date format and calculate the duration between the starting and leaving dates using difftime function.
-
-```{r eval=FALSE}
-as.Date(as.character(leaving$enrolled_at), 
-        format = "%Y-%m-%d") 
-as.Date(as.character(leaving$left_at), 
-        format = "%Y-%m-%d")
-difftime(leaving$left_at, leaving$enrolled_at, 
-         units = c("days"))
-```
-
-We also compute how many percentages of students formally quit the course. 
-
-```{r eval=FALSE}
-leaving_num[1] = dim(leaving4)[1]/dim(enrolments4)[1] * 100
-```
-
-Lastly, we bind the data and quantify the students' leaving reason for easier graphing. We will then calculate the number of times each cause got picked. After presenting the graph, we will discuss it in the discussion area for a more detailed explanation. 
-
-```{r eval=FALSE}
-#bind the data
-merged_leaving <- do.call("rbind", list(leaving4, leaving5, 
-                                        leaving6, leaving7))
-
-#quantify leaving reason for easier graphing
-merged_leaving <- merged_leaving %>%
-  group_by(leaving_reason) %>%
-  mutate(reason_num = cur_group_id())
-
-```
+For the second question, we want to analyse how many students leave the course, what time they quit, and why. Same as before, we will begin by pre-processing the data from leaving survey responses. It is worth mentioning that we assume people who formally quit the course are all required to fill the survey, so the number of students who formally leave the class is equal to the number of the survey entries.  
+\hfill\break
+We read the file and store each run data in a variable similar to before. The corresponding pre-processing script is leaving.R located in /munge folder. We can then move on to the processing script, leaving_reason.R, located in the/src folder. We begin by merging the enrolment and leaving data to extract the enrolment_at column. The column later will be used to calculate the duration between the starting and leaving date. Then, we drop the columns unrelated to our observations, such as id, last_completed_step_at, etc.   
+\hfill\break
+Like before, we convert the date from string format to date format and calculate the duration between the starting and leaving dates using the difftime function. We also compute how many percentages of students formally quit the course. Lastly, we bind the data and quantify the students' leaving reason for easier graphing. We will then calculate the number of times each cause got picked. After presenting the graph, we will discuss it in the discussion area for a more detailed explanation. 
 
 ### Question 3 
 **Which topic interests students the most?**  
 \hfill\break
-For the third question, we will see which topic interests students the most through the video viewing status provided in the video-stats.csv. In particular, we will check variable total views and viewed_onehundred_percent. Then, we will discuss the results in the discussion section. We will begin by pre-processing the data first. 
-
-```{r eval=FALSE}
-#read file video stats run 3 to 7 and store it in variable
-files = list.files(path = "data/", 
-                   pattern="*video-stats.csv"
-                   , full.names = T)
-
-#the range start from 3 since run 1 and 2 does not provide 
-#the video stats
-for (i in 3:7) {
-  temp <- paste("video", i, sep = "")
-  assign(temp, read.csv(files[i-2]))
-}
-```
-
-After pre-processing phase, we can move on to processing the data. For each run, we will keep only the variables or columns related to our observations. Those variables are step position, title, total_views and viewed_onehundred_percent. 
-
-```{r eval=FALSE}
-video3 <- video3[c(1:2, 4, 15)]
-
-```
-
-Next, we will index the data according to the run and bind them together to enable easier graphing process. 
-
-``` {r eval=FALSE}
-#index and bind the data to enable easier graphing 
-video3['run'] <- 3; video4['run'] <- 4; 
-video5['run'] <- 5; video6['run'] <- 6;
-video7['run'] <- 7
-
-merged_video <- do.call("rbind", list(video3, video4, video5, 
-                                        video6, video7))
-```
-
-In order to get accurate x-axis, we will convert the step_position from numeric format into string format.
-
-``` {r eval=FALSE}
-merged_video$step_position <- 
-  as.character(merged_video$step_position)
-```
+For the third question, we will see which topic interests students the most through the video viewing status provided in the video-stats.csv. In particular, we will check variable total views and viewed_onehundred_percent. Then, we will discuss the results in the discussion section. We will begin by pre-processing the data first, with the script video.R located in the /munge folder.     
+\hfill\break
+After the pre-processing phase, we can process the data (video_topic.R located in/src folder). We will keep only the variables or columns related to our observations for each run. Those variables are step position, title, total_views, and viewed_onehundred_percent. Next, we will index the data according to the run and bind them together to simplify the graphing process. To get an accurate x-axis, we will convert the step_position from numeric format into the string format.
 
 ### Question 4 
 **Is there any correlation between the number of views and the device form?**  
 \hfill\break
-We want to check the correlation between the total number of views and the device form for problem four. We will only keep the related variables, which are video_duration, total_views, viewed_onehundred_percent, desktop_device_percentage, mobile_device_percentage, and tablet_device_percentage. Console and tv entries will be discarded since it only amounts to a little. After subsetting the data,  we compute the correlation using the cor function. We will then store the result in a variable and discuss the result in the next phase. 
+We want to check the correlation between the total number of views and the device form for problem four. The code is in the video_topic.R located in the /src folder. We will only keep the related variables, which are video_duration, total_views, viewed_onehundred_percent, desktop_device_percentage, mobile_device_percentage, and tablet_device_percentage. Console and tv entries will be discarded since it only amounts to a little. After subsetting the data,  we compute the correlation using the cor function. We will then store the result in a variable and discuss the result in the next phase. 
 
 ``` {r eval=FALSE}
 cor_res <- cor(video_cor)
@@ -380,7 +257,3 @@ For the deployment part, the user can access the whole process on the following 
 # Conclusion
 
 In conclusion, we have completed the exploration process of a data science project while adhering to the CRISP-DM methodology. We managed to answer the questions imposed in the *Business Understanding* part with coherent solution explained in the several phase after that. Resources introduced in the course, such as library ggplot2 and dplyr, are also used throughout the process.   
-
-
-
-

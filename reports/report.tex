@@ -252,7 +252,7 @@ come up with the following precise questions:
 \item
   Which topic interests students the most?
 \item
-  Is there any correlation between thevideo views and the device form?
+  Is there any correlation between the video views and the device form?
 \end{itemize}
 
 \hypertarget{data-understanding-and-data-preparation}{%
@@ -309,9 +309,26 @@ variables are there in the file):
 \end{itemize}
 
 \noindent Each of the files consists of different rows (entries), and
-all the columns (variables) are stored in a chr and num format.
+all the columns (variables) are stored in a chr and num format.\\
+\hfill\break In this project, we are going to consider several files
+related to our observations only. The files are :
 
-ALSO STATE WHY YOU PICK THE FILE
+\begin{itemize}
+\tightlist
+\item
+  cyber-security-*\_enrolments.csv (run 1 to 7)\\
+  We are going to use thess files to answer question number one
+\item
+  cyber-security-*\_leaving-survey-responses.csv (run 1 to 7)\\
+  We are going to use these files to answer question number two
+\item
+  cyber-security-*\_video-stats.csv (run 3 to 7)\\
+  We are going to use these files to answer question number three and
+  four
+\end{itemize}
+
+\noindent Other files are going to be dropped since they are unrelated
+to our questions.
 
 \hypertarget{exploring-the-data}{%
 \subsection{Exploring the Data}\label{exploring-the-data}}
@@ -327,81 +344,32 @@ result, we will include and discuss them in the \emph{Modeling} and
 \subsubsection{Question 1}\label{question-1}}
 
 \textbf{What is the participation rate of the students?}\\
-\hfill\break For the first question, we want to analyse whether students
-are highly engaged in the course. There are many ways to check this, but
-we will check the full participation rate. We will focus on how many
-percentages of students fully participated and finished the material of
-the classes. We will also check the duration of the completion for each
-student and we can do this by checking the enrolments.csv provided in
-the data set.\\
-\hfill\break Firstly, we will do some data pre-processing for part 1
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\#read file enrolments run 1 to 7}
-\NormalTok{files }\OtherTok{=} \FunctionTok{list.files}\NormalTok{(}\AttributeTok{path =} \StringTok{"data/"}\NormalTok{, }
-                   \AttributeTok{pattern=}\StringTok{"*enrolments.csv"}\NormalTok{, }\AttributeTok{full.names =}\NormalTok{ T)}
-
-\CommentTok{\#store each run in a single variable}
-\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(files)) \{}
-\NormalTok{  temp }\OtherTok{\textless{}{-}} \FunctionTok{paste}\NormalTok{(}\StringTok{"enrolments"}\NormalTok{, i, }\AttributeTok{sep =} \StringTok{""}\NormalTok{)}
-  \FunctionTok{assign}\NormalTok{(temp, }\FunctionTok{read.csv}\NormalTok{(files[i]))}
-\NormalTok{\}}
-\end{Highlighting}
-\end{Shaded}
-
-We read and store each run of enrolments in a single variable for a
-later use. After that, we begin to do some processing in our data. We
-begin by subsetting the students who fully participated in the course
-(there are entries for the fully\_participated columns in the csv data).
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{enrolments }\OtherTok{\textless{}{-}} 
-\NormalTok{  enrolments[}\SpecialCharTok{!}\NormalTok{enrolments}\SpecialCharTok{$}\NormalTok{fully\_participated\_at }\SpecialCharTok{==} \StringTok{""}\NormalTok{ , ]}
-\end{Highlighting}
-\end{Shaded}
-
-Then, we convert the enrolled\_at and fully\_participated variables of
-each run from string format to date format to calculate the duration
-later using difftime function. We convert it by using the as.Date
-function. It is also worth mentioning that we store the code inside a
-function for a more effective writing process for the converting and
-calculating duration part.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{as.Date}\NormalTok{(}\FunctionTok{as.character}\NormalTok{(enrolments\_na}\SpecialCharTok{$}\NormalTok{enrolled\_at), }
-        \AttributeTok{format =} \StringTok{"\%Y{-}\%m{-}\%d"}\NormalTok{) }
-\FunctionTok{as.Date}\NormalTok{(}\FunctionTok{as.character}\NormalTok{(enrolments\_na}\SpecialCharTok{$}\NormalTok{fully\_participated\_at), }
-        \AttributeTok{format =} \StringTok{"\%Y{-}\%m{-}\%d"}\NormalTok{)}
-\FunctionTok{difftime}\NormalTok{(enrolments\_na}\SpecialCharTok{$}\NormalTok{fully\_participated\_at, }
-\NormalTok{         enrolments\_na}\SpecialCharTok{$}\NormalTok{enrolled\_at,}
-         \AttributeTok{units =} \FunctionTok{c}\NormalTok{(}\StringTok{"days"}\NormalTok{))}
-\end{Highlighting}
-\end{Shaded}
-
-After converting it, we calculate the duration between the
+\hfill\break We want to analyse whether students are highly engaged in
+the course for the first question. There are many ways to check this,
+but we will review the total participation rate. We will focus on how
+many percentages of students fully participated and finished the
+material of the classes. We will also check the duration of the
+completion for each student, and we can do this by checking the
+enrolments.csv provided in the data set.\\
+\hfill\break Firstly, we will do some data pre-processing for part one,
+and the corresponding script is enrolments.R located in the /munge
+folder. We read and store each run of enrolments in a single variable
+for later use. After that, we begin processing our data, and the
+corresponding script is fully\_participated.R is located in the /src
+folder. We start by subsetting the students who fully participated in
+the course (there are entries for the fully\_participated columns in the
+csv data). Then, we convert the enrolled\_at and fully\_participated
+variables of each run from string format to date format to calculate the
+duration later using the difftime function. We convert it by using the
+as.Date function. It is also worth mentioning that we store the code
+inside a function for a more effective writing process for the
+converting and calculating duration part.\\
+\hfill\break After converting it, we calculate the duration between the
 fully\_participated\_at and enrolled\_at and store it in a new variable.
 We also remove entries or outliers for each run where the period exceeds
-365 days or one year.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{enrolments1\_na }\OtherTok{\textless{}{-}}\NormalTok{ enrolments1\_na[}\SpecialCharTok{!}\NormalTok{(enrolments1\_na}\SpecialCharTok{$}\NormalTok{duration }
-                                   \SpecialCharTok{\textgreater{}} \DecValTok{365}\NormalTok{) , ]}
-\end{Highlighting}
-\end{Shaded}
-
-Lastly, we calculate the percentage of students who fully participated
-in the course proportion to the overall enrollment for each run.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{enrolments\_completion\_rate[}\DecValTok{1}\NormalTok{] }\OtherTok{=} 
-  \FunctionTok{dim}\NormalTok{(enrolments1\_na)[}\DecValTok{1}\NormalTok{]}\SpecialCharTok{/}\FunctionTok{dim}\NormalTok{(enrolments1)[}\DecValTok{1}\NormalTok{] }\SpecialCharTok{*} \DecValTok{100}
-\end{Highlighting}
-\end{Shaded}
+365 days or one year. Lastly, we calculate the percentage of students
+who fully participated in the course proportion to the overall
+enrollment for each run.
 
 \hypertarget{question-2}{%
 \subsubsection{Question 2}\label{question-2}}
@@ -414,85 +382,23 @@ we will begin by pre-processing the data from leaving survey responses.
 It is worth mentioning that we assume people who formally quit the
 course are all required to fill the survey, so the number of students
 who formally leave the class is equal to the number of the survey
-entries.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\#read file archetype survey responses run 1 to 7 }
-\CommentTok{\#and store it in a variable}
-\NormalTok{files }\OtherTok{=} \FunctionTok{list.files}\NormalTok{(}\AttributeTok{path =} \StringTok{"data/"}\NormalTok{, }
-                   \AttributeTok{pattern=}\StringTok{"*leaving{-}survey{-}responses.csv"}
-\NormalTok{                   , }\AttributeTok{full.names =}\NormalTok{ T)}
-
-\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(files)) \{}
-\NormalTok{  temp }\OtherTok{\textless{}{-}} \FunctionTok{paste}\NormalTok{(}\StringTok{"leaving"}\NormalTok{, i, }\AttributeTok{sep =} \StringTok{""}\NormalTok{)}
-  \FunctionTok{assign}\NormalTok{(temp, }\FunctionTok{read.csv}\NormalTok{(files[i]))}
-\NormalTok{\}}
-\end{Highlighting}
-\end{Shaded}
-
-We read the file and store each run data in a variable similar to
-before. We can then move on to the processing part. We begin by merging
-the enrolment and leaving data to extract the enrolment\_at column. The
+entries.\\
+\hfill\break We read the file and store each run data in a variable
+similar to before. The corresponding pre-processing script is leaving.R
+located in /munge folder. We can then move on to the processing script,
+leaving\_reason.R, located in the/src folder. We begin by merging the
+enrolment and leaving data to extract the enrolment\_at column. The
 column later will be used to calculate the duration between the starting
-and leaving date.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{leaving4 }\OtherTok{\textless{}{-}} \FunctionTok{merge}\NormalTok{(leaving4, enrolments4, }\AttributeTok{by =} \StringTok{"learner\_id"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-Then, we drop the columns unrelated to our observations, such as id,
-last\_completed\_step\_at, etc.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{leaving4 }\OtherTok{\textless{}{-}}\NormalTok{ leaving4[}\SpecialCharTok{{-}}\FunctionTok{c}\NormalTok{(}\DecValTok{5}\SpecialCharTok{:}\DecValTok{8}\NormalTok{, }\DecValTok{10}\SpecialCharTok{:}\DecValTok{20}\NormalTok{)]}
-\end{Highlighting}
-\end{Shaded}
-
-Like before, we convert the date from string format to date format and
-calculate the duration between the starting and leaving dates using
-difftime function.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{as.Date}\NormalTok{(}\FunctionTok{as.character}\NormalTok{(leaving}\SpecialCharTok{$}\NormalTok{enrolled\_at), }
-        \AttributeTok{format =} \StringTok{"\%Y{-}\%m{-}\%d"}\NormalTok{) }
-\FunctionTok{as.Date}\NormalTok{(}\FunctionTok{as.character}\NormalTok{(leaving}\SpecialCharTok{$}\NormalTok{left\_at), }
-        \AttributeTok{format =} \StringTok{"\%Y{-}\%m{-}\%d"}\NormalTok{)}
-\FunctionTok{difftime}\NormalTok{(leaving}\SpecialCharTok{$}\NormalTok{left\_at, leaving}\SpecialCharTok{$}\NormalTok{enrolled\_at, }
-         \AttributeTok{units =} \FunctionTok{c}\NormalTok{(}\StringTok{"days"}\NormalTok{))}
-\end{Highlighting}
-\end{Shaded}
-
-We also compute how many percentages of students formally quit the
-course.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{leaving\_num[}\DecValTok{1}\NormalTok{] }\OtherTok{=} \FunctionTok{dim}\NormalTok{(leaving4)[}\DecValTok{1}\NormalTok{]}\SpecialCharTok{/}\FunctionTok{dim}\NormalTok{(enrolments4)[}\DecValTok{1}\NormalTok{] }\SpecialCharTok{*} \DecValTok{100}
-\end{Highlighting}
-\end{Shaded}
-
-Lastly, we bind the data and quantify the students' leaving reason for
-easier graphing. We will then calculate the number of times each cause
-got picked. After presenting the graph, we will discuss it in the
-discussion area for a more detailed explanation.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\#bind the data}
-\NormalTok{merged\_leaving }\OtherTok{\textless{}{-}} \FunctionTok{do.call}\NormalTok{(}\StringTok{"rbind"}\NormalTok{, }\FunctionTok{list}\NormalTok{(leaving4, leaving5, }
-\NormalTok{                                        leaving6, leaving7))}
-
-\CommentTok{\#quantify leaving reason for easier graphing}
-\NormalTok{merged\_leaving }\OtherTok{\textless{}{-}}\NormalTok{ merged\_leaving }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{group\_by}\NormalTok{(leaving\_reason) }\SpecialCharTok{\%\textgreater{}\%}
-  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{reason\_num =} \FunctionTok{cur\_group\_id}\NormalTok{())}
-\end{Highlighting}
-\end{Shaded}
+and leaving date. Then, we drop the columns unrelated to our
+observations, such as id, last\_completed\_step\_at, etc.\\
+\hfill\break Like before, we convert the date from string format to date
+format and calculate the duration between the starting and leaving dates
+using the difftime function. We also compute how many percentages of
+students formally quit the course. Lastly, we bind the data and quantify
+the students' leaving reason for easier graphing. We will then calculate
+the number of times each cause got picked. After presenting the graph,
+we will discuss it in the discussion area for a more detailed
+explanation.
 
 \hypertarget{question-3}{%
 \subsubsection{Question 3}\label{question-3}}
@@ -502,59 +408,15 @@ discussion area for a more detailed explanation.
 students the most through the video viewing status provided in the
 video-stats.csv. In particular, we will check variable total views and
 viewed\_onehundred\_percent. Then, we will discuss the results in the
-discussion section. We will begin by pre-processing the data first.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\#read file video stats run 3 to 7 and store it in variable}
-\NormalTok{files }\OtherTok{=} \FunctionTok{list.files}\NormalTok{(}\AttributeTok{path =} \StringTok{"data/"}\NormalTok{, }
-                   \AttributeTok{pattern=}\StringTok{"*video{-}stats.csv"}
-\NormalTok{                   , }\AttributeTok{full.names =}\NormalTok{ T)}
-
-\CommentTok{\#the range start from 3 since run 1 and 2 does not provide }
-\CommentTok{\#the video stats}
-\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{3}\SpecialCharTok{:}\DecValTok{7}\NormalTok{) \{}
-\NormalTok{  temp }\OtherTok{\textless{}{-}} \FunctionTok{paste}\NormalTok{(}\StringTok{"video"}\NormalTok{, i, }\AttributeTok{sep =} \StringTok{""}\NormalTok{)}
-  \FunctionTok{assign}\NormalTok{(temp, }\FunctionTok{read.csv}\NormalTok{(files[i}\DecValTok{{-}2}\NormalTok{]))}
-\NormalTok{\}}
-\end{Highlighting}
-\end{Shaded}
-
-After pre-processing phase, we can move on to processing the data. For
-each run, we will keep only the variables or columns related to our
-observations. Those variables are step position, title, total\_views and
-viewed\_onehundred\_percent.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{video3 }\OtherTok{\textless{}{-}}\NormalTok{ video3[}\FunctionTok{c}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{15}\NormalTok{)]}
-\end{Highlighting}
-\end{Shaded}
-
+discussion section. We will begin by pre-processing the data first, with
+the script video.R located in the /munge folder.\\
+\hfill\break After the pre-processing phase, we can process the data
+(video\_topic.R located in/src folder). We will keep only the variables
+or columns related to our observations for each run. Those variables are
+step position, title, total\_views, and viewed\_onehundred\_percent.
 Next, we will index the data according to the run and bind them together
-to enable easier graphing process.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\#index and bind the data to enable easier graphing }
-\NormalTok{video3[}\StringTok{\textquotesingle{}run\textquotesingle{}}\NormalTok{] }\OtherTok{\textless{}{-}} \DecValTok{3}\NormalTok{; video4[}\StringTok{\textquotesingle{}run\textquotesingle{}}\NormalTok{] }\OtherTok{\textless{}{-}} \DecValTok{4}\NormalTok{; }
-\NormalTok{video5[}\StringTok{\textquotesingle{}run\textquotesingle{}}\NormalTok{] }\OtherTok{\textless{}{-}} \DecValTok{5}\NormalTok{; video6[}\StringTok{\textquotesingle{}run\textquotesingle{}}\NormalTok{] }\OtherTok{\textless{}{-}} \DecValTok{6}\NormalTok{;}
-\NormalTok{video7[}\StringTok{\textquotesingle{}run\textquotesingle{}}\NormalTok{] }\OtherTok{\textless{}{-}} \DecValTok{7}
-
-\NormalTok{merged\_video }\OtherTok{\textless{}{-}} \FunctionTok{do.call}\NormalTok{(}\StringTok{"rbind"}\NormalTok{, }\FunctionTok{list}\NormalTok{(video3, video4, video5, }
-\NormalTok{                                        video6, video7))}
-\end{Highlighting}
-\end{Shaded}
-
-In order to get accurate x-axis, we will convert the step\_position from
-numeric format into string format.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{merged\_video}\SpecialCharTok{$}\NormalTok{step\_position }\OtherTok{\textless{}{-}} 
-  \FunctionTok{as.character}\NormalTok{(merged\_video}\SpecialCharTok{$}\NormalTok{step\_position)}
-\end{Highlighting}
-\end{Shaded}
+to simplify the graphing process. To get an accurate x-axis, we will
+convert the step\_position from numeric format into the string format.
 
 \hypertarget{question-4}{%
 \subsubsection{Question 4}\label{question-4}}
@@ -562,8 +424,9 @@ numeric format into string format.
 \textbf{Is there any correlation between the number of views and the
 device form?}\\
 \hfill\break We want to check the correlation between the total number
-of views and the device form for problem four. We will only keep the
-related variables, which are video\_duration, total\_views,
+of views and the device form for problem four. The code is in the
+video\_topic.R located in the /src folder. We will only keep the related
+variables, which are video\_duration, total\_views,
 viewed\_onehundred\_percent, desktop\_device\_percentage,
 mobile\_device\_percentage, and tablet\_device\_percentage. Console and
 tv entries will be discarded since it only amounts to a little. After
@@ -606,7 +469,7 @@ each run.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-18-1} \end{center}
+\begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-3-1} \end{center}
 
 For the second graph, we will include the percentage of students who
 fully participated in the course proportion to the overall enrollment
@@ -619,7 +482,7 @@ for each run.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-19-1} \end{center}
+\begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-4-1} \end{center}
 
 \hypertarget{discussion}{%
 \subsubsection{Discussion}\label{discussion}}
@@ -658,7 +521,7 @@ until leaving date against the leaving date.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-20-1} \end{center}
+\begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-5-1} \end{center}
 
 For graph 4, we will include the percentage of students who leave in the
 course in proportion to the overall enrollment for each run.
@@ -670,7 +533,7 @@ course in proportion to the overall enrollment for each run.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-21-1} \end{center}
+\begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-6-1} \end{center}
 
 The last graph (graph 5) will present the bar plot consisting number of
 entries for each reason.
@@ -682,7 +545,7 @@ entries for each reason.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-22-1} \end{center}
+\begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-7-1} \end{center}
 
 \hypertarget{discussion-1}{%
 \subsubsection{Discussion}\label{discussion-1}}
@@ -752,7 +615,7 @@ by different colored line.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-23-1} \end{center}
+\begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-8-1} \end{center}
 
 Similar to graph 6, graph 7 represents the variables total\_views
 against the step\_position. Each run characterised by distinct colored
@@ -765,7 +628,7 @@ line.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-24-1} \end{center}
+\begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-9-1} \end{center}
 
 \hypertarget{discussion-2}{%
 \subsubsection{Discussion}\label{discussion-2}}
@@ -860,10 +723,6 @@ to answer the questions imposed in the \emph{Business Understanding}
 part with coherent solution explained in the several phase after that.
 Resources introduced in the course, such as library ggplot2 and dplyr,
 are also used throughout the process.
-
-kurangin number of codes (email joe)
-
-final check everything
 
 
 
