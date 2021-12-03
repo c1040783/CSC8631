@@ -91,6 +91,7 @@ graph1 <- ggplot(data = merged_enrolments, aes(
   x = enrolled_at, y = duration, color = as.factor(run))) +
   xlab("Enrolled date") + ylab("Duration of completion (days)") + 
   geom_point() +
+  ggtitle("Plot of duration against enrolled date") +
   guides(color = guide_legend(title = "Run")) + 
   scale_x_date(date_breaks = "3 months" , date_labels = "%b-%y")
 

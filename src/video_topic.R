@@ -1,3 +1,8 @@
+#assign and keep for cor function
+video_cor = video5[c(3:4, 15, 17:18, 20)]
+
+cor_res <- cor(video_cor)
+
 #keep related columns or variables to the observation
 #step position, title, total_views and viewed_onehundred_percent
 video3 <- video3[c(1:2, 4, 15)]
