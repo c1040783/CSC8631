@@ -218,13 +218,13 @@ University)},
 
 This report aims to discuss and report any findings to the CSC8631
 coursework assignment regarding exploratory data analysis in learning
-analytics. Regarding the data set, the students were provided with one
-from FutureLearn MOOC. We are then asked to provide any valuable or
-non-valuable insights while following the best-practice development
-explained thoroughly via the teaching resources available. To ensure we
-are following the data-driven process throughout the project, we will
-also be adhering to the CRISP-DM methodology. Lastly, we will wrap up
-with a conclusion regarding the overall findings.
+analytics. The students were provided with dataset from FutureLearn
+MOOC. We are then asked to provide any valuable or non-valuable insights
+while following the best-practice development explained thoroughly via
+the teaching resources available. To ensure we are following the
+data-driven process throughout the project, we will also be adhering to
+the CRISP-DM methodology. Lastly, we will wrap up with a conclusion
+regarding the overall findings.
 
 \hypertarget{business-understanding}{%
 \section{Business Understanding}\label{business-understanding}}
@@ -246,13 +246,22 @@ come up with the following precise questions:
 \begin{itemize}
 \tightlist
 \item
-  Is the students in the course highly engaged?
+  Is the students in the course highly engaged?\\
+  The results can gain insight into whether further action to increase
+  the engagement rate is necessary or not.
 \item
-  How many students and what causes students to leave the course?
+  How many students and what causes students to leave the course?\\
+  The results can determine the primary cause for students leaving and
+  what to change in the future course run.
 \item
-  Which topic interests students the most?
+  Which topic interests students the most?\\
+  The results can be implemented in the future course run when
+  determining the course topic.
 \item
-  Is there any correlation between the video views and the device form?
+  Is there any correlation between the video views and the device
+  form?\\
+  The results can gain insight when designing course videos in the
+  future course run.
 \end{itemize}
 
 \hypertarget{data-understanding-and-data-preparation}{%
@@ -283,10 +292,10 @@ defined in \emph{Business Understanding}. This phase will consist of:
 \subsection{Describe Data}\label{describe-data}}
 
 Firstly, we are given the data set regarding an online course from the
-FutureLearn MOOC platform. The data set consists of several files for
-each run from run 1 to run 7. Each run may consist of the following data
-in the .csv form (the number inside the bracket denotes how many
-variables are there in the file):
+FutureLearn MOOC platform. The data set consists of several files from
+run 1 to run 7. Each run may consist of the following data in the .csv
+form (the number inside the bracket denotes how many variables are there
+in the file):
 
 \begin{itemize}
 \tightlist
@@ -310,25 +319,25 @@ variables are there in the file):
 
 \noindent Each of the files consists of different rows (entries), and
 all the columns (variables) are stored in a chr and num format.\\
-\hfill\break In this project, we are going to consider several files
-related to our observations only. The files are :
+\hfill\break In this project, we will consider several files related to
+our observations only. The files are :
 
 \begin{itemize}
 \tightlist
 \item
   cyber-security-*\_enrolments.csv (run 1 to 7)\\
-  We are going to use thess files to answer question number one
+  We are going to use these files to answer question number one
 \item
   cyber-security-*\_leaving-survey-responses.csv (run 1 to 7)\\
   We are going to use these files to answer question number two
 \item
   cyber-security-*\_video-stats.csv (run 3 to 7)\\
-  We are going to use these files to answer question number three and
+  We are going to use these files to answer questions number three and
   four
 \end{itemize}
 
-\noindent Other files are going to be dropped since they are unrelated
-to our questions.
+\noindent Other files will be dropped since they are unrelated to our
+questions.
 
 \hypertarget{exploring-the-data}{%
 \subsection{Exploring the Data}\label{exploring-the-data}}
@@ -396,9 +405,8 @@ format and calculate the duration between the starting and leaving dates
 using the difftime function. We also compute how many percentages of
 students formally quit the course. Lastly, we bind the data and quantify
 the students' leaving reason for easier graphing. We will then calculate
-the number of times each cause got picked. After presenting the graph,
-we will discuss it in the discussion area for a more detailed
-explanation.
+the number of times each cause got picked. We will discuss the result in
+the discussion area for a more detailed explanation.
 
 \hypertarget{question-3}{%
 \subsubsection{Question 3}\label{question-3}}
@@ -454,13 +462,13 @@ results we can derive from the graph.
 \textbf{What is the participation rate of the students?}\\
 \hfill\break For the first question, we want to analyse whether students
 are highly engaged in the course by checking the percentages of students
-fully participated and finished the material of the classes.
+who fully participated and finished the material of the classes.
 Additionally, the duration of the completion for each student will also
-be checked. After finished preparing the data in the previous phase, we
-can now plot the graph.\\
+be limited. After preparing the data in the previous phase, we can now
+plot the graph.\\
 \hfill\break For the first graph, we will graph using ggplot2 to plot
-the duration of completion against the starting date for each student in
-each run.
+the completion duration against each student's starting date in each
+run.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -472,7 +480,7 @@ each run.
 \begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-3-1} \end{center}
 
 For the second graph, we will include the percentage of students who
-fully participated in the course proportion to the overall enrollment
+fully participated in the course in proportion to the overall enrollment
 for each run.
 
 \begin{Shaded}
@@ -489,28 +497,30 @@ for each run.
 
 In graph 1, we can see that duration of students completing the courses
 varies but is primarily concentrated in 0 to 150 days. We can also see
-that the number of people who fully participated in the course decreases
+that the number of people who fully participated in the class decreases
 for each run. This means that the class gets less engaging as time goes
 by, and different approaches are needed to boost the engagement rate of
 the students. Additionally, the graph shows runs that open in the latter
-half of the year gain more enrollment than those that begin in the first
-half of the year. This pattern could be taken into consideration when
-opening a new run in the future.\\
+half of the year gain more enrollment than those in the first half of
+the year. This pattern could be considered when opening a new run in the
+future.\\
 \hfill\break Graph 2 shows the percentage of students who fully
 participated in proportion to the overall enrolments against each run.
 We can see that it peaked at 12.5\% for run one and stays under 5\%
 after that. It confirms the statement before that the students who fully
-participated decreased for each run.
+participated decreased for each run. The overall findings suggest that
+full participation or engagement seems to be pretty low; maybe it can be
+considered in the future.
 
 \hypertarget{question-2-1}{%
 \subsubsection{Question 2}\label{question-2-1}}
 
 \textbf{How many students and what causes students to leave the
 course?}\\
-\hfill\break For the second question, we want to evaluate number of
-students leaving the course, the time they quit, and the reason why. We
-will now plot the graph using library ggplot2 and the data prepared in
-the phase before.\\
+\hfill\break For the second question, we want to evaluate the number of
+students leaving the course, the time they quit, and why. We will now
+plot the graph using library ggplot2 and the data prepared in the phase
+before.\\
 \hfill\break Graph 3 will demonstrate the duration from starting date
 until leaving date against the leaving date.
 
@@ -523,7 +533,7 @@ until leaving date against the leaving date.
 
 \begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-5-1} \end{center}
 
-For graph 4, we will include the percentage of students who leave in the
+For graph 4, we will include the percentage of students who leave the
 course in proportion to the overall enrollment for each run.
 
 \begin{Shaded}
@@ -535,8 +545,8 @@ course in proportion to the overall enrollment for each run.
 
 \begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-6-1} \end{center}
 
-The last graph (graph 5) will present the bar plot consisting number of
-entries for each reason.
+The last graph (graph 5) will present the bar plot consisting of the
+number of entries for each reason.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -559,7 +569,7 @@ number) ranges from 2\%-5\% and is also relatively low. Comparing graphs
 2 and 4, the data suggest that many students dropped the class and did
 not leave the course formally.\\
 \hfill\break Graph 5 shows the bar plot consisting of the number of
-entries for each reason. Each number represents the reasons below
+entries for each reason. Each number represents the reasons below:
 
 \begin{itemize}
 \tightlist
@@ -600,13 +610,13 @@ directly.
 
 \textbf{Which topic interests students the most?}\\
 \hfill\break The video viewing status provided in the video-stats.csv
-will be used to determine which topic attracts students the most in the
-third question. We will look at the variables total\_views and viewed
-onehundred percent in detail. We will use the data we collected in the
-previous phase to model the graph.\\
+will determine which topic attracts students the most in the third
+question. We will look at the variables total\_views and
+viewed\_onehundred\_percent in detail. We will use the data we collected
+in the previous phase to model the graph.\\
 \hfill\break Graph 6 represents the variables
-viewed\_onehundred\_percent against the step\_position. Each run defined
-by different colored line.
+viewed\_onehundred\_percent against the step\_position. A different
+colored line defines each run.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -618,8 +628,8 @@ by different colored line.
 \begin{center}\includegraphics{report_files/figure-latex/unnamed-chunk-8-1} \end{center}
 
 Similar to graph 6, graph 7 represents the variables total\_views
-against the step\_position. Each run characterised by distinct colored
-line.
+against the step\_position. A distinct colored line characterises each
+run.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -653,9 +663,9 @@ for future course runs.
 
 \textbf{Is there any correlation between the video views and the device
 form?}\\
-\hfill\break To check whether there are correlation between the number
-of views and the device form, we already used the cor function in the
-previous phase. The results are as follow
+\hfill\break We used the cor function in the previous phase to check the
+correlation between the number of views and the device form. The results
+are as follow:
 
 \tiny
 
@@ -697,7 +707,8 @@ previous phase. The results are as follow
 From the correlation result, we can see a strong positive linear
 relationship between the total\_views and mobile\_device\_percentage.
 This result suggests that most students watch the lecture video from
-their mobile phones. The correlation matrix also shows a positive
+their mobile phones. Thus, video in the future could be made more
+mobile-friendly. The correlation matrix also shows a positive
 relationship between viewed\_onehundred\_percent with
 mobile\_device\_percentage and tablet\_device\_percentage. This finding
 indicates that students watching from their mobile or tablet devices are
@@ -720,9 +731,9 @@ reading this.
 In conclusion, we have completed the exploration process of a data
 science project while adhering to the CRISP-DM methodology. We managed
 to answer the questions imposed in the \emph{Business Understanding}
-part with coherent solution explained in the several phase after that.
-Resources introduced in the course, such as library ggplot2 and dplyr,
-are also used throughout the process.
+part with a coherent solution explained in the several phases. Resources
+introduced in the course, such as library ggplot2 and dplyr, are also
+used throughout the process.
 
 
 
