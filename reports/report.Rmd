@@ -46,6 +46,7 @@ load.project()
 # Run code in analysis.R script
 source("src/fully_participated.R")
 source("src/leaving_reason.R")
+source("src/video_topic.R")
 ```
 
 # Introduction
@@ -54,19 +55,19 @@ This report aims to discuss and report any findings to the CSC8631 coursework as
 
 # Business Understanding
 
-The first step of CRISP-DM is the *Business Understanding* step, where we try to understand what the business wants to solve. In this particular project, we are given the data set regarding a course in the FutureLearn MOOC platform. Just like a real-life face-to-face class, we want to find out whether students are involved in the class or not and how many students continue to participate until the end of the semester. We are also interested in finding out how many students leave the course and, naturally, their reason for doing so. Next, we want to find out which topics students are most interested to learn about. Lastly, we want to know the students' opinion of the course and what to improve in the future. After formulating the previous problems into a sentence, we come up with the following precise questions : 
+The first step of CRISP-DM is the *Business Understanding* step, where we try to understand what the business wants to solve. In this particular project, we are given the data set regarding a course in the FutureLearn MOOC platform. Just like a real-life face-to-face class, we want to find out whether students are involved in the class or not and how many students continue to participate until the end of the semester. We are also interested in finding out how many students leave the course and, naturally, their reason for doing so. Next, we want to find out which topics students are most interested to learn about. Lastly, we also want to check what device students watch most of the video from. Thus, we want to check the correlation between the video views and the device form. After formulating the previous problems into a sentence, we come up with the following precise questions: 
 
-* Is the students in the course highly engaged? (CHECK): and Are there any variables closely related to the participation or engagement rate?
+* Is the students in the course highly engaged?
 * How many students and what causes students to leave the course?
-* What topic interests students the most?
-* How are the students who have taken the course feedback?
+* Which topic interests students the most?
+* Is there any correlation between thevideo views and the device form?
 
 # Data Understanding and Data Preparation
 
 After formulating the questions, we move on to the *Data Understanding* and *Data Preparation* part, where we focus on understanding and formatting the data that assist the business tasks defined in *Business Understanding*. This phase will consist of: 
 
 * Describe data: 
-In this part, we are trying to understand and describe the data in a short description. We can do this by examining the data format, the number of rows and columns, and the features that are accessible. 
+In this part, we try to understand and describe the data in a short description. We can do this by examining the data format, the number of rows and columns, and the features that are accessible. We are also going to explain which data we are going to pick.  
 
 * Exploring the data: 
 In this section, we are trying to analyse the relationship between data and visualise the data. The conclusion and visualisation of the data exploration should support and verify the business question defined previously. We will tailor the data by selecting, cleaning, integrating, and formatting it.  
@@ -85,14 +86,16 @@ Firstly, we are given the data set regarding an online course from the FutureLea
 * weekly sentiment survey response (4)
 
 \noindent
-Each of the files consists of different rows (entries), and all the columns (variables) are stored in a chr format. 
+Each of the files consists of different rows (entries), and all the columns (variables) are stored in a chr and num format. 
+
+ALSO STATE WHY YOU PICK THE FILE
 
 ## Exploring the Data
 
-In this section, we will begin to explore the given data set. In particular, we want to explore the area where the solution will support the problem defined in the *Business Understanding* part. There are three questions and we will explore them one by one. 
+In this section, we will begin to explore the given data set. In particular, we want to explore the area where the solution will support the problem defined in the *Business Understanding* part. There are three questions, and we will explore them one by one. For the graph result, we will include and discuss them in the *Modeling* and *Evaluation* phase.
 
 ### Question 1 
-**What is the participation rate of the students? (CHECK): and Are there any variables closely related to this?**  
+**What is the participation rate of the students?**  
 \hfill\break
 For the first question, we want to analyse whether students are highly engaged in the course. There are many ways to check this, but we will check the full participation rate. We will focus on how many percentages of students fully participated and finished the material of the classes. We will also check the duration of the completion for each student and we can do this by checking the enrolments.csv provided in the data set.  
 \hfill\break
@@ -142,26 +145,6 @@ Lastly, we calculate the percentage of students who fully participated in the co
 enrolments_completion_rate[1] = 
   dim(enrolments1_na)[1]/dim(enrolments1)[1] * 100
 ```
-
-After preparing all of the data, we can now do the graphing. For the first graph, we will graph using ggplot2 the duration of completion against the starting date for each student in each run. 
-
-```{r fig.asp = 0.8, fig.width = 6, fig.align = 'center'}
-# Insert plot 1
-graph1
-```
-
-For the second graph, we will include the percentage of students who fully participated in the course proportion to the overall enrollment for each run. 
-
-```{r fig.asp = 0.8, fig.width = 3.5, fig.align = 'center'}
-# Insert plot 2
-graph2
-```
-
-### Discussion 
-
-In graph 1, we can see that duration of students completing the courses varies but is primarily concentrated in 0 to 150 days. We can also see that the number of people who fully participated in the course decreases for each run. This means that the class gets less engaging as time goes by, and different approaches are needed to boost the engagement rate of the students. Additionally, the graph shows runs that open in the latter half of the year gain more enrollment than those that begin in the first half of the year. This pattern could be taken into consideration when opening a new run in the future.  
-\hfill\break
-Graph 2 shows the percentage of students who fully participated in proportion to the overall enrolments against each run. We can see that it peaked at 12.5% for run one and stays under 5% after that. It confirms the statement before that the students who fully participated decreased for each run.
 
 ### Question 2 
 **How many students and what causes students to leave the course?**  
@@ -224,21 +207,109 @@ merged_leaving <- merged_leaving %>%
 
 ```
 
-After the data preparation completes, we will begin to plot using the library of ggplot2. The third graph will demonstrate the duration from starting date until leaving date against the leaving date. 
+### Question 3 
+**Which topic interests students the most?**  
+\hfill\break
+For the third question, we will see which topic interests students the most through the video viewing status provided in the video-stats.csv. In particular, we will check variable total views and viewed_onehundred_percent. Then, we will discuss the results in the discussion section. We will begin by pre-processing the data first. 
+
+```{r eval=FALSE}
+#read file video stats run 3 to 7 and store it in variable
+files = list.files(path = "data/", 
+                   pattern="*video-stats.csv"
+                   , full.names = T)
+
+#the range start from 3 since run 1 and 2 does not provide 
+#the video stats
+for (i in 3:7) {
+  temp <- paste("video", i, sep = "")
+  assign(temp, read.csv(files[i-2]))
+}
+```
+
+After pre-processing phase, we can move on to processing the data. For each run, we will keep only the variables or columns related to our observations. Those variables are step position, title, total_views and viewed_onehundred_percent. 
+
+```{r eval=FALSE}
+video3 <- video3[c(1:2, 4, 15)]
+
+```
+
+Next, we will index the data according to the run and bind them together to enable easier graphing process. 
+
+``` {r eval=FALSE}
+#index and bind the data to enable easier graphing 
+video3['run'] <- 3; video4['run'] <- 4; 
+video5['run'] <- 5; video6['run'] <- 6;
+video7['run'] <- 7
+
+merged_video <- do.call("rbind", list(video3, video4, video5, 
+                                        video6, video7))
+```
+
+In order to get accurate x-axis, we will convert the step_position from numeric format into string format.
+
+``` {r eval=FALSE}
+merged_video$step_position <- 
+  as.character(merged_video$step_position)
+```
+
+### Question 4 
+**Is there any correlation between the number of views and the device form?**  
+\hfill\break
+We want to check the correlation between the total number of views and the device form for problem four. We will only keep the related variables, which are video_duration, total_views, viewed_onehundred_percent, desktop_device_percentage, mobile_device_percentage, and tablet_device_percentage. Console and tv entries will be discarded since it only amounts to a little. After subsetting the data,  we compute the correlation using the cor function. We will then store the result in a variable and discuss the result in the next phase. 
+
+``` {r eval=FALSE}
+cor_res <- cor(video_cor)
+```
+
+# Modeling and Evaluation
+
+This section combines two different phases for a more straightforward reading format. For the modeling part, we will graph our findings question by question, and for the evaluation, we will discuss any results we can derive from the graph.  
+
+### Question 1 
+**What is the participation rate of the students?**    
+\hfill\break
+For the first question, we want to analyse whether students are highly engaged in the course by checking the percentages of students fully participated and finished the material of the classes. Additionally, the duration of the completion for each student will also be checked. After finished preparing the data in the previous phase, we can now plot the graph.  
+\hfill\break
+For the first graph, we will graph using ggplot2 to plot the duration of completion against the starting date for each student in each run. 
+
+```{r fig.asp = 0.8, fig.width = 6, fig.align = 'center'}
+# Insert plot 1
+graph1
+```
+
+For the second graph, we will include the percentage of students who fully participated in the course proportion to the overall enrollment for each run. 
+
+```{r fig.asp = 0.8, fig.width = 3.5, fig.align = 'center'}
+# Insert plot 2
+graph2
+```
+
+### Discussion 
+
+In graph 1, we can see that duration of students completing the courses varies but is primarily concentrated in 0 to 150 days. We can also see that the number of people who fully participated in the course decreases for each run. This means that the class gets less engaging as time goes by, and different approaches are needed to boost the engagement rate of the students. Additionally, the graph shows runs that open in the latter half of the year gain more enrollment than those that begin in the first half of the year. This pattern could be taken into consideration when opening a new run in the future.  
+\hfill\break
+Graph 2 shows the percentage of students who fully participated in proportion to the overall enrolments against each run. We can see that it peaked at 12.5% for run one and stays under 5% after that. It confirms the statement before that the students who fully participated decreased for each run.
+
+### Question 2 
+**How many students and what causes students to leave the course?**  
+\hfill\break
+For the second question, we want to evaluate number of students leaving the course, the time they quit, and the reason why. We will now plot the graph using library ggplot2 and the data prepared in the phase before.    
+\hfill\break
+Graph 3 will demonstrate the duration from starting date until leaving date against the leaving date. 
 
 ```{r fig.asp = 0.8, fig.width = 6, fig.align = 'center', message = FALSE}
 # Insert plot 3
 graph3
 ```
 
-For the fourth graph, we will include the percentage of students who leave in the course in proportion to the overall enrollment for each run. 
+For graph 4, we will include the percentage of students who leave in the course in proportion to the overall enrollment for each run. 
 
 ```{r fig.asp = 0.8, fig.width = 3.5, fig.align = 'center'}
 # Insert plot 4
 graph4
 ```
 
-The last graph will present the bar plot consisting number of entries for each reason. 
+The last graph (graph 5) will present the bar plot consisting number of entries for each reason. 
 
 ```{r fig.asp = 0.8, fig.width = 3.5, fig.align = 'center'}
 # Insert plot 5
@@ -249,7 +320,7 @@ graph5
 
 In graph 3, we can see no distinct` patterns regarding either the leaving date or the duration from starting to leaving. Students leaving times are spread out evenly, just like the duration of quitting. Thus, we can not extract any valuable insight from this graph. For graph 4, the leaving rate of students (in proportion to the overall enrollments number) ranges from 2%-5% and is also relatively low. Comparing graphs 2 and 4, the data suggest that many students dropped the class and did not leave the course formally.  
 \hfill\break
-Graph five shows the bar plot consisting of the number of entries for each reason. Each number represents the reasons below 
+Graph 5 shows the bar plot consisting of the number of entries for each reason. Each number represents the reasons below 
 
 * I don't have enough time (1)
 * I prefer not to say (2)
@@ -260,26 +331,55 @@ Graph five shows the bar plot consisting of the number of entries for each reaso
 * The course wasn't what I expected (7)
 * The course won't help me reach my goals (8)
 
+\noindent
 We can see from the graph that the biggest reason for students leaving the course is reason one, which is "I don't have enough time." It then followed by reason three, "Other" and the other reason fairs about the same. The high count of reason one suggests that many students did not have enough time to learn and complete the course material. This interpretation could be considered when designing the structure of future course runs. The teaching and quiz interval could be made more sparse, thus allowing more time flexibility for the students.
 Since many students answered "Other," it indicates that their reason for leaving is not stated in the options above. Thus, to enable a more directed feedback process in the future, more options should be listed, or students should have the chance to write their reason for leaving directly.  
 
 ### Question 3 
-**What topic interests students the most?**  
+**Which topic interests students the most?**  
 \hfill\break
-For the third question, we will see which topic interests students the most through the video viewing status provided in the video-stats.csv. In particular, we will check variable viewed_onehundred_percent and see which topic have the highest rating. We will begin by pre-processing the data first. 
+The video viewing status provided in the video-stats.csv will be used to determine which topic attracts students the most in the third question. We will look at the variables total_views and viewed onehundred percent in detail. We will use the data we collected in the previous phase to model the graph.  
+\hfill\break
+Graph 6 represents the variables viewed_onehundred_percent against the step_position. Each run defined by different colored line. 
 
+```{r fig.asp = 0.8, fig.width = 6, fig.align = 'center', message = FALSE}
+# Insert plot 6
+graph6
+```
 
+Similar to graph 6, graph 7 represents the variables total_views against the step_position. Each run characterised by distinct colored line. 
 
-### Additional notes
+```{r fig.asp = 0.8, fig.width = 6, fig.align = 'center', message = FALSE}
+# Insert plot 7
+graph7
+```
 
-Configuration setting
+### Discussion 
+
+In graph 6, we can see that each run peaks at step 2.1, which corresponds to the topic of "Welcome to Week 2: payment security". This interpretation suggests that those topics are the most engaging ones for the student since many watched them until the end. For graph 7, the highest peak is at the first video, corresponding to the topic "Welcome to the course." The second peak is at step 1.5, corresponding to the video "Privacy online and offline." Overall, the trend of the graph is decreasing. This analysis suggests that most of the students are high-spirited at the beginning of the course, and their participation decreases as time goes by. The plot also indicates that the second peak topic, "Privacy online and offline," catches the students' attention the most. It is possible to elaborate more on the issues mentioned above, payment security, and online or offline privacy for future course runs. 
+
+### Question 4 
+**Is there any correlation between the video views and the device form?**  
+\hfill\break
+To check whether there are correlation between the number of views and the device form, we already used the cor function in the previous phase. The results are as follow
+
+\tiny
+```{r}
+cor_res
+```
+\normalsize
+
+### Discussion 
+
+From the correlation result, we can see a strong positive linear relationship between the total_views and mobile_device_percentage. This result suggests that most students watch the lecture video from their mobile phones. The correlation matrix also shows a positive relationship between viewed_onehundred_percent with mobile_device_percentage and tablet_device_percentage. This finding indicates that students watching from their mobile or tablet devices are more likely to finish their video than the other students watching from the desktop. Other than that, the correlation matrix does not show any other distinct patterns. 
+
+# Deployment  
+
+For the deployment part, the user can access the whole process on the following [Github repository](https://github.com/c1040783/CSC8631). Additionally, this written final project will also be one of the deployment forms since the user will understand and gain insight through reading this. 
 
 # Conclusion
 
-AAA
-
-
-
+In conclusion, we have completed the exploration process of a data science project while adhering to the CRISP-DM methodology. We managed to answer the questions imposed in the *Business Understanding* part with coherent solution explained in the several phase after that. Resources introduced in the course, such as library ggplot2 and dplyr, are also used throughout the process.   
 
 
 
